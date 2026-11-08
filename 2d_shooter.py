@@ -1,16 +1,37 @@
-import pygame
+import pygame as pg
 from player_class import Player, Bullet
 
-pygame.init()
+pg.init()
+
 WIDTH = 1900
 HEIGHT = 1080
+SCALE = 3       # image scale factor
+TILE = 16 * SCALE       # tile size
+GROUND = HEIGHT - 3 * TILE      # ground level
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("2D Shooter")
-clock = pygame.time.Clock()
+screen = pg.display.set_mode((WIDTH, HEIGHT))
+pg.display.set_caption("2D Shooter")
+clock = pg.time.Clock()
 
 
-player = Player(600, 600)
+def load(file, name):  # Load and scale image from specified file and name
+    img = pg.image.load(f"{file}/{name}.png").convert_alpha() # load image
+    return pg.transform.scale(img, (img.get_width() * SCALE, img.get_height() * SCALE)) # scale image
+    
+background = load("backdrops", "background")
+ground_top = load("grounds", "ground_top")
+ground_fill = load("grounds", "ground_fill")
+
+# paint floor onto a surface at start up
+floor = pg.Surface((WIDTH, HEIGHT - GROUND), pg.SRCALPHA) # create floor surface
+for x in range(0, WIDTH, TILE): # draw floor tiles across the screen
+    floor.blit(ground_top, (x, 0)) # draw top row of floor tiles
+    floor.blit(ground_fill, (x, TILE)) # draw middle row of floor tiles
+    floor.blit(ground_fill, (x, TILE * 2)) # draw bottom row of floor tiles
+
+
+
+player = Player(600, 800)
 bullets = [] # List to store all bullets in the game
 
 
@@ -20,11 +41,11 @@ bullets = [] # List to store all bullets in the game
 running = True
 while running:
     # Check for events such as closing the game window.
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
             running = False
-            
-        if event.type == pygame.MOUSEBUTTONDOWN: # shoot bullet when mouse is clicked
+
+        if event.type == pg.MOUSEBUTTONDOWN: # shoot bullet when mouse is clicked
             bullet = Bullet(player.rect.centerx, player.rect.centery, player.direction) # create bullet at player position
             bullets.append(bullet)  # add bullet to list of bullets
 
@@ -38,7 +59,9 @@ while running:
 
 
     # draw game objects
-    screen.fill("black")
+    screen.blit(background, (0, 0))
+    screen.blit(floor, (0, GROUND))
+    
     player.move()
     if player.direction == "right":
         screen.blit(player.image, (player.rect.x, player.rect.y))
@@ -52,9 +75,9 @@ while running:
             screen.blit(bullet.flipped_image, bullet.rect)
         
     #update display
-    pygame.display.flip()
+    pg.display.flip()
 
     # limit to 120 FPS
     clock.tick(120)
 
-pygame.quit()
+pg.quit()
