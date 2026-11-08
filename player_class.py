@@ -12,15 +12,14 @@ class Player:
         self.rect = self.image.get_rect(topleft=(x,y))
         self.health = 100
         self.is_alive = True
-        self.is_jumping = False
-        self.y_velocity = self.JUMP_HEIGHT # sets the initial y velocity to jump height
+        self.on_ground = False
+        self.y_velocity = 0 
         self.direction = "right"
-        
+    FEET_GAP = 6 # class constant; distance between player feet and ground. If different image is used, value may need to be changed.
     # Move player function
-    def move(self):
+    def move(self, ground_y):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
-            self.is_jumping = True
+
         if keys[pygame.K_a]:
             self.rect.x -= self.SPEED
             self.direction = "left"
@@ -28,13 +27,29 @@ class Player:
             self.rect.x += self.SPEED
             self.direction = "right"
 
-        # Make the player jump
+        if keys[pygame.K_SPACE] and self.on_ground:  # jump when space is pressed and player is on the ground
+            self.y_velocity = -self.JUMP_HEIGHT     # set negative velocity to move player upward
+            self.on_ground = False                  #when jumping on_ground becomes false
+
+        self.y_velocity += self.Y_GRAVITY           # increase y velocity by the gravity (higher gravity = faster fall)
+        self.rect.y += self.y_velocity              # update characters y position based on velocity
+
+        floor_level = ground_y + self.FEET_GAP      # calculate floor level including the feet gap
+        if self.rect.bottom >= floor_level:         # checks if player has reached the floor
+            self.rect.bottom = floor_level          # set player bottom to floor level
+            self.y_velocity = 0                     # reset y velocity when landing
+            self.on_ground = True                   # set on_ground to true when landing
+
+              
+        """                 ----------------MIGHT USE IN FUTURE--------------
+        # Make the player jump       
         if self.is_jumping:
             self.rect.y -= self.y_velocity    # updates the y position of player to velocity/jumpheight
             self.y_velocity -= self.Y_GRAVITY  # decreases the y velocity by the gravity (higher gravity = faster fall)
             if self.y_velocity < -self.JUMP_HEIGHT:  # stops the jump when velocity reaches negative jump height
                 self.is_jumping = False    # stops the jump
                 self.y_velocity = self.JUMP_HEIGHT  # reset the y velocity to jump height (which will equal 0)
+        """
 
 
 class Bullet:

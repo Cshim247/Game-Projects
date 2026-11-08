@@ -7,7 +7,7 @@ WIDTH = 1900
 HEIGHT = 1080
 SCALE = 3       # image scale factor
 TILE = 16 * SCALE       # tile size
-GROUND = HEIGHT - 3 * TILE      # ground level
+GROUND_Y = HEIGHT - 3 * TILE      # ground level
 
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 pg.display.set_caption("2D Shooter")
@@ -23,7 +23,7 @@ ground_top = load("grounds", "ground_top")
 ground_fill = load("grounds", "ground_fill")
 
 # paint floor onto a surface at start up
-floor = pg.Surface((WIDTH, HEIGHT - GROUND), pg.SRCALPHA) # create floor surface
+floor = pg.Surface((WIDTH, HEIGHT - GROUND_Y), pg.SRCALPHA) # create floor surface
 for x in range(0, WIDTH, TILE): # draw floor tiles across the screen
     floor.blit(ground_top, (x, 0)) # draw top row of floor tiles
     floor.blit(ground_fill, (x, TILE)) # draw middle row of floor tiles
@@ -60,9 +60,10 @@ while running:
 
     # draw game objects
     screen.blit(background, (0, 0))
-    screen.blit(floor, (0, GROUND))
+    screen.blit(floor, (0, GROUND_Y))
+
+    player.move(GROUND_Y)
     
-    player.move()
     if player.direction == "right":
         screen.blit(player.image, (player.rect.x, player.rect.y))
     else:
