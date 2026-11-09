@@ -1,6 +1,7 @@
 import pygame as pg
 from player_class import Player, Bullet
 
+
 pg.init()
 
 WIDTH = 1900
@@ -9,6 +10,7 @@ SCALE = 3       # image scale factor
 TILE = 16 * SCALE       # tile size
 GROUND_Y = HEIGHT - 3 * TILE      # ground level
 
+particle_group = pg.sprite.Group()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
 pg.display.set_caption("2D Shooter")
 clock = pg.time.Clock()
@@ -35,9 +37,6 @@ player = Player(600, 800)
 bullets = [] # List to store all bullets in the game
 
 
-
-
-
 running = True
 while running:
     # Check for events such as closing the game window.
@@ -62,8 +61,17 @@ while running:
     screen.blit(background, (0, 0))
     screen.blit(floor, (0, GROUND_Y))
 
+    # Health bar start
+    pg.draw.rect(screen, "red", (10, 20, 100, 20))     # Draw a red rectangle as placeholder UI for health bar
+
+    #if needed, come back and refactor after implementing health system when enemies are added.
+    if player.health > 0:
+        pg.draw.rect(screen, "green", (10, 20, int(player.health / player.MAX_HEALTH * 100), 20)) # Draw green health bar proportional to players health
+    pg.draw.rect(screen, "white", (10, 20, 100, 20), 2) # Draw a white border around health bar
+    # Health bar end
+
     player.move(GROUND_Y)
-    
+
     if player.direction == "right":
         screen.blit(player.image, (player.rect.x, player.rect.y))
     else:

@@ -5,6 +5,7 @@ class Player:
     SPEED = 5
     JUMP_HEIGHT = 20 # sets how many pixels the player can jump
     Y_GRAVITY = 1 # gravity for players jump (higher gravity = faster fall)
+    MAX_HEALTH = 100
     def __init__(self, x, y):
         self.image = pygame.transform.scale(pygame.image.load("sprites/player_sprite_24x32.png").convert_alpha(), (30 * scale, 32 * scale))
         self.flipped_image = pygame.transform.flip(self.image, True, False)
@@ -56,7 +57,7 @@ class Bullet:
     def __init__(self, x, y, direction):
         self.image = pygame.transform.scale(pygame.image.load("sprites/bullet.png").convert_alpha(), (10 * scale, 10 * scale))
         self.flipped_image = pygame.transform.flip(self.image, True, False)
-        self.rect = self.image.get_rect(topleft=(x,y))
+        self.rect = self.image.get_rect(topleft=(x,y)) # create bullet rectangle at specified position
         self.direction = direction
         self.speed = 8
 
